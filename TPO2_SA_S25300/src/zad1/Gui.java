@@ -10,9 +10,22 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Gui extends Application {
-    public static void start(String[] args) {
+
+    private static Service service;
+    public static void start(String[] args, Service service) {
+        Gui.service = service;
         launch(args);
     }
+
+    private String pickedCountry;
+    private String pickedCity;
+    private String pickedCurrency;
+    private Label weatherContentLabel = new Label(service.getWeatherPretty("Warsaw"));
+    private Label currencyRateLabel = new Label("Currency rate: USD");
+    private Label currencyRateContentLabel = new Label("" + service.getRateFor("USD"));
+
+    private Label currencyRateNbpLabel = new Label("Currency Nbp PLN rate");
+    private Label currencyRateNbpContentLabel = new Label("" + service.getNBPRate());
     
     @Override
     public void start(Stage primaryStage) {
@@ -26,7 +39,7 @@ public class Gui extends Application {
         hbox.setStyle("-fx-background-color: #336699;");
 
         Label weatherLabel = new Label("Weather");
-        Label currencyRateLabel = new Label("Currency rate");
+        weatherLabel.setLabelFor(weatherContentLabel);
 
 
         Button btn = new Button();
@@ -34,7 +47,13 @@ public class Gui extends Application {
         btn.setOnAction(event -> System.out.println("Hello World!"));
 
         hbox.getChildren().add(weatherLabel);
+        hbox.getChildren().add(weatherContentLabel);
+
         hbox.getChildren().add(currencyRateLabel);
+        hbox.getChildren().add(currencyRateContentLabel);
+
+        hbox.getChildren().add(currencyRateNbpLabel);
+        hbox.getChildren().add(currencyRateNbpContentLabel);
         hbox.getChildren().add(btn);
 
 
@@ -42,5 +61,15 @@ public class Gui extends Application {
         root.getChildren().add(hbox);
         primaryStage.setScene(new Scene(root, 300, 250));
         primaryStage.show();
+    }
+
+    private void updateContents() {
+        service = new Service(pickedCountry);
+
+        weatherContentLabel.setText(service.getWeatherPretty(pickedCity));
+        currencyRateContentLabel.setText("" + service.getRateFor(pickedCurrency));
+        currencyRateLabel.setText("Currency rate: " + pickedCurrency);
+
+        currencyRateNbpContentLabel.setText("" + service.getNBPRate());
     }
 }

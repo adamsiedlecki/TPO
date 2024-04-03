@@ -16,6 +16,6 @@ public class Main {
     // ...
     // część uruchamiająca GUI
 
-    Gui.start(args);
+    Gui.start(args, s);
   }
 }

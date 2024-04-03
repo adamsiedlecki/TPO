@@ -31,7 +31,7 @@ public class Service {
 
     public String getWeather(String city) {
         Cords cords = getCords(city);
-        return getContent(String.format("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s", cords.getLat(), cords.getLng(), OPEN_WEATHER_API_KEY));
+        return getContent(String.format("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=metric", cords.getLat(), cords.getLng(), OPEN_WEATHER_API_KEY));
     }
 
     public Double getRateFor(String currency) {
@@ -59,6 +59,16 @@ public class Service {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getWeatherPretty(String city) {
+        String weatherJson = getWeather(city);
+        JSONObject obj = (JSONObject) JSONValue.parse(weatherJson);
+        JSONObject current = (JSONObject) obj.get("main");
+        double temperature = (double)current.get("temp");
+        long pressure = (long) current.get("pressure");
+
+        return String.format("Temperature: %s \n Pressure: %s", temperature, pressure);
     }
 
     private JSONArray getNbpRates(String table) {
