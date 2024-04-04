@@ -26,6 +26,13 @@ public class Gui extends Application {
 
     private Label currencyRateNbpLabel = new Label("Currency Nbp PLN rate");
     private Label currencyRateNbpContentLabel = new Label("" + service.getNBPRate());
+
+    public void setUserInput(String pickedCountry, String pickedCity, String pickedCurrency) {
+        this.pickedCountry = pickedCountry;
+        this.pickedCity = pickedCity;
+        this.pickedCurrency = pickedCurrency;
+        updateContents();
+    }
     
     @Override
     public void start(Stage primaryStage) {
@@ -36,7 +43,7 @@ public class Gui extends Application {
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(15, 12, 15, 12));
         hbox.setSpacing(10);
-        hbox.setStyle("-fx-background-color: #336699;");
+        //hbox.setStyle("-fx-background-color: #336699;");
 
         Label weatherLabel = new Label("Weather");
         weatherLabel.setLabelFor(weatherContentLabel);
@@ -44,7 +51,7 @@ public class Gui extends Application {
 
         Button btn = new Button();
         btn.setText("Change Data button");
-        btn.setOnAction(event -> System.out.println("Hello World!"));
+        btn.setOnAction(event -> PromptWindow.showNewWindow(this, pickedCountry, pickedCity, pickedCurrency));
 
         hbox.getChildren().add(weatherLabel);
         hbox.getChildren().add(weatherContentLabel);

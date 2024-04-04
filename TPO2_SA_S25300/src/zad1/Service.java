@@ -38,6 +38,9 @@ public class Service {
         String response = getContent("https://open.er-api.com/v6/latest/" + getCurrencyCode(getCountryCode(country)));
         JSONObject obj = (JSONObject) JSONValue.parse(response);
         JSONObject array = (JSONObject) obj.get("rates");
+        if (array.get(currency.toUpperCase()) instanceof Long) {
+            return Double.valueOf((long) array.get(currency.toUpperCase()));
+        }
         return (double) array.get(currency.toUpperCase());
     }
 
@@ -65,10 +68,10 @@ public class Service {
         String weatherJson = getWeather(city);
         JSONObject obj = (JSONObject) JSONValue.parse(weatherJson);
         JSONObject current = (JSONObject) obj.get("main");
-        double temperature = (double)current.get("temp");
+        String temp = String.valueOf(current.get("temp") );
         long pressure = (long) current.get("pressure");
 
-        return String.format("Temperature: %s \n Pressure: %s", temperature, pressure);
+        return String.format("Temperature: %s \n Pressure: %s", temp, pressure);
     }
 
     private JSONArray getNbpRates(String table) {
@@ -87,6 +90,9 @@ public class Service {
         String response = getContent(String.format("http://api.openweathermap.org/geo/1.0/direct?q=%s,%s&limit=1&appid=%s", city, getCountryCode(country), OPEN_WEATHER_API_KEY));
         Object obj = JSONValue.parse(response);
         JSONArray array = (JSONArray) obj;
+        if (array.isEmpty()) {
+            throw new RuntimeException("There is no such city in such country: " + country +" " + city);
+        }
         JSONObject entry = (JSONObject) array.get(0);
         return new Cords((double) entry.get("lat"), (double) entry.get("lon"));
     }
