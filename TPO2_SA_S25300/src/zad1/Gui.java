@@ -7,6 +7,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 public class Gui extends Application {
@@ -17,15 +20,17 @@ public class Gui extends Application {
         launch(args);
     }
 
-    private String pickedCountry;
-    private String pickedCity;
-    private String pickedCurrency;
-    private Label weatherContentLabel = new Label(service.getWeatherPretty("Warsaw"));
-    private Label currencyRateLabel = new Label("Currency rate: USD");
-    private Label currencyRateContentLabel = new Label("" + service.getRateFor("USD"));
+    private String pickedCountry = "Poland";
+    private String pickedCity = "Warsaw";
+    private String pickedCurrency = "USD";
+    private Label weatherContentLabel = new Label(service.getWeatherPretty(pickedCity));
+    private Label currencyRateLabel = new Label("Currency rate: " + pickedCurrency);
+    private Label currencyRateContentLabel = new Label("" + service.getRateFor(pickedCurrency));
 
     private Label currencyRateNbpLabel = new Label("Currency Nbp PLN rate");
     private Label currencyRateNbpContentLabel = new Label("" + service.getNBPRate());
+    private WebView webView;
+    private WebEngine webEngine;
 
     public void setUserInput(String pickedCountry, String pickedCity, String pickedCurrency) {
         this.pickedCountry = pickedCountry;
@@ -63,9 +68,19 @@ public class Gui extends Application {
         hbox.getChildren().add(currencyRateNbpContentLabel);
         hbox.getChildren().add(btn);
 
+        webView = new WebView();
+        webEngine = webView.getEngine();
+        webEngine.load(getWikipediaUrl(pickedCity));
 
         StackPane root = new StackPane();
         root.getChildren().add(hbox);
+
+        VBox vBox = new VBox();
+        vBox.setPrefWidth(200);
+        vBox.setPrefHeight(200);
+        vBox.getChildren().add(webView);
+        root.getChildren().add(vBox);
+
         primaryStage.setScene(new Scene(root, 300, 250));
         primaryStage.show();
     }
@@ -78,5 +93,11 @@ public class Gui extends Application {
         currencyRateLabel.setText("Currency rate: " + pickedCurrency);
 
         currencyRateNbpContentLabel.setText("" + service.getNBPRate());
+
+        webEngine.load(getWikipediaUrl(pickedCity));
+    }
+
+    private String getWikipediaUrl(String phrase) {
+        return "http://pl.wikipedia.org/wiki/" + phrase;
     }
 }
