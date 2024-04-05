@@ -27,7 +27,7 @@ public class Gui extends Application {
     private Label currencyRateLabel = new Label("Currency rate: " + pickedCurrency);
     private Label currencyRateContentLabel = new Label("" + service.getRateFor(pickedCurrency));
 
-    private Label currencyRateNbpLabel = new Label("Currency Nbp PLN rate");
+    private Label currencyRateNbpLabel = new Label("Currency Nbp PLN rate: ");
     private Label currencyRateNbpContentLabel = new Label("" + service.getNBPRate());
     private WebView webView;
     private WebEngine webEngine;
@@ -50,7 +50,7 @@ public class Gui extends Application {
         hbox.setSpacing(10);
         //hbox.setStyle("-fx-background-color: #336699;");
 
-        Label weatherLabel = new Label("Weather");
+        Label weatherLabel = new Label("Weather: ");
         weatherLabel.setLabelFor(weatherContentLabel);
 
 
@@ -58,17 +58,16 @@ public class Gui extends Application {
         btn.setText("Change Data button");
         btn.setOnAction(event -> PromptWindow.showNewWindow(this, pickedCountry, pickedCity, pickedCurrency));
 
-        hbox.getChildren().add(weatherLabel);
-        hbox.getChildren().add(weatherContentLabel);
+        addVbox(hbox, weatherLabel, weatherContentLabel);
+        addVbox(hbox, currencyRateLabel, currencyRateContentLabel);
+        addVbox(hbox, currencyRateNbpLabel, currencyRateNbpContentLabel);
 
-        hbox.getChildren().add(currencyRateLabel);
-        hbox.getChildren().add(currencyRateContentLabel);
-
-        hbox.getChildren().add(currencyRateNbpLabel);
-        hbox.getChildren().add(currencyRateNbpContentLabel);
         hbox.getChildren().add(btn);
 
         webView = new WebView();
+        webView.setPrefHeight(500);
+        webView.setPrefWidth(500);
+        webView.setContextMenuEnabled(false);
         webEngine = webView.getEngine();
         webEngine.load(getWikipediaUrl(pickedCity));
 
@@ -79,10 +78,21 @@ public class Gui extends Application {
         vBox.setPrefWidth(200);
         vBox.setPrefHeight(200);
         vBox.getChildren().add(webView);
-        root.getChildren().add(vBox);
+        //root.getChildren().add(vBox);
 
         primaryStage.setScene(new Scene(root, 300, 250));
         primaryStage.show();
+    }
+
+    private void addVbox(HBox root, Label... items) {
+        VBox vBoxWeather = new VBox();
+        if (items.length > 1) {
+            items[0].setStyle("-fx-font-weight: bold");
+        }
+        for(Label item: items) {
+            vBoxWeather.getChildren().add(item);
+        }
+        root.getChildren().add(vBoxWeather);
     }
 
     private void updateContents() {
