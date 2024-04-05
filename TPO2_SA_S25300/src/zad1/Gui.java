@@ -68,6 +68,8 @@ public class Gui extends Application {
 //        webView.setPrefWidth(500);
         webView.setContextMenuEnabled(false);
         webEngine = webView.getEngine();
+        webEngine.setJavaScriptEnabled(true);
+
         webEngine.load(getWikipediaUrl(pickedCity));
 
         VBox root = new VBox();

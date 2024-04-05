@@ -22,7 +22,7 @@ public class Service {
 
     private final String country;
 
-    private static final String OPEN_WEATHER_API_KEY = "";
+    private static final String OPEN_WEATHER_API_KEY = System.getenv("OPEN_WEATHER_KEY");
     private static final String EXCHANGE_RATE_API_KEY = "2167d3a13fe39f20524bca69"; // by 10 minutes mail
 
     public Service(String country) {
