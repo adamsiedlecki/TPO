@@ -45,7 +45,8 @@ public class Gui extends Application {
         primaryStage.setWidth(800);
 
         HBox hbox = new HBox();
-        hbox.setPadding(new Insets(15, 12, 15, 12));
+        hbox.setPrefHeight(150);
+        //hbox.setPadding(new Insets(15, 12, 15, 12));
         hbox.setSpacing(10);
         //hbox.setStyle("-fx-background-color: #336699;");
 
