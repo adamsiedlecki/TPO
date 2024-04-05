@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -32,7 +31,7 @@ public class Gui extends Application {
     private WebView webView;
     private WebEngine webEngine;
 
-    public void setUserInput(String pickedCountry, String pickedCity, String pickedCurrency) {
+    public void setUserInputAndUpdate(String pickedCountry, String pickedCity, String pickedCurrency) {
         this.pickedCountry = pickedCountry;
         this.pickedCity = pickedCity;
         this.pickedCurrency = pickedCurrency;
@@ -65,20 +64,20 @@ public class Gui extends Application {
         hbox.getChildren().add(btn);
 
         webView = new WebView();
-        webView.setPrefHeight(500);
-        webView.setPrefWidth(500);
+//        webView.setPrefHeight(500);
+//        webView.setPrefWidth(500);
         webView.setContextMenuEnabled(false);
         webEngine = webView.getEngine();
         webEngine.load(getWikipediaUrl(pickedCity));
 
-        StackPane root = new StackPane();
+        VBox root = new VBox();
         root.getChildren().add(hbox);
 
-        VBox vBox = new VBox();
-        vBox.setPrefWidth(200);
-        vBox.setPrefHeight(200);
-        vBox.getChildren().add(webView);
-        //root.getChildren().add(vBox);
+        VBox webViewVBox = new VBox();
+        webViewVBox.setPrefWidth(root.getWidth());
+        //webViewVBox.setPrefHeight(200);
+        webViewVBox.getChildren().add(webView);
+        root.getChildren().add(webViewVBox);
 
         primaryStage.setScene(new Scene(root, 300, 250));
         primaryStage.show();

@@ -50,7 +50,7 @@ public class Service {
         String currencyCode = getCurrencyCode(getCountryCode(country));
 
         if (currencyCode.equals("PLN")) {
-            return 0.0; // nbp nie notuje zł względem zł
+            return 1.0; // nbp nie notuje zł względem zł
         }
 
         try {
