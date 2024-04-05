@@ -27,7 +27,7 @@ public class PromptWindow {
 
         Label errorLabel = new Label();
 
-        Button button = new Button("Zatwierdź");
+        Button button = new Button("LOAD DATA");
         button.setOnAction(event -> {
             String text1 = countryField.getText();
             String text2 = cityField.getText();
