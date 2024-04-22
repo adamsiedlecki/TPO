@@ -25,7 +25,9 @@ public class PromptWindow {
         TextField currencyField = new TextField(currency);
         currencyLabel.setLabelFor(currencyField);
 
-        Button button = new Button("Zatwierdź");
+        Label errorLabel = new Label();
+
+        Button button = new Button("LOAD DATA");
         button.setOnAction(event -> {
             String text1 = countryField.getText();
             String text2 = cityField.getText();
@@ -33,8 +35,12 @@ public class PromptWindow {
 
             System.out.println("Country picked: " + text1);
 
-            parent.setUserInput(text1,text2, text3);
-            newStage.close();
+            try {
+                parent.setUserInputAndUpdate(text1,text2, text3);
+                newStage.close();
+            } catch (Exception e) {
+                errorLabel.setText("Try again: " + e.getMessage());
+            }
         });
 
         GridPane gridPane = new GridPane();
@@ -50,7 +56,8 @@ public class PromptWindow {
         gridPane.add(currencyField, 1, 2);
 
         gridPane.add(button, 0, 3);
-        newStage.setScene(new Scene(gridPane, 300, 200));
+        gridPane.add(errorLabel, 1, 4);
+        newStage.setScene(new Scene(gridPane, 700, 200));
         newStage.setTitle("Please insert data");
         newStage.show();
     }
