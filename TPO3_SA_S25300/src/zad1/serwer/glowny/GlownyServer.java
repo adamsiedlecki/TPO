@@ -65,13 +65,21 @@ public class GlownyServer {
                 String jezykiDostepne = String.join(", ", serwerySlownikowe.keySet());
                 Commons.writeFlush("Brak slownika dla jezyka: " + kodJezykaDocelowego + ". Dostepne jezyki: " + jezykiDostepne, out);
             } else {
-                Commons.writeFlush("Serwer przetwarza...", out);
-                try (Socket serwerSlownikowySocket = new Socket(inetSocketAddress.getAddress(), inetSocketAddress.getPort());
-                     BufferedReader slownikIn = new BufferedReader(new InputStreamReader(serwerSlownikowySocket.getInputStream()));
-                     BufferedWriter slownikOut = new BufferedWriter(new OutputStreamWriter(serwerSlownikowySocket.getOutputStream()))) {
+                try(Socket serwerSlownikowySocket = new Socket();) {
+                    serwerSlownikowySocket.connect(inetSocketAddress, 50);
+                    try (
+                            BufferedReader slownikIn = new BufferedReader(new InputStreamReader(serwerSlownikowySocket.getInputStream()));
+                            BufferedWriter slownikOut = new BufferedWriter(new OutputStreamWriter(serwerSlownikowySocket.getOutputStream()))) {
+                        Commons.writeFlush("Serwer przetwarza...", out);
                         Commons.writeFlush("{" + polskieSlowo + "," + clientSocket.getInetAddress().getHostAddress() + ", " + portKlienta + "}", slownikOut);
-                         log("Przekazano wiadomosc do serwera slownikowego. Jego odpowiedz: " + slownikIn.readLine());
-                     }
+                        log("Przekazano wiadomosc do serwera slownikowego. Jego odpowiedz: " + slownikIn.readLine());
+                    }
+                }catch(IOException e) {
+                    serwerySlownikowe.remove(kodJezykaDocelowego);
+                    log("wyrejestrowuje serwer jezykowy " + kodJezykaDocelowego);
+                    Commons.writeFlush("Brak slownika dla jezyka: " + kodJezykaDocelowego + "(serwer sie zwinal)", out);
+                }
+
             }
             log("odpowiedz klienta: "+ in.readLine());
         } catch (IOException e) {
