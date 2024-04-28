@@ -66,6 +66,7 @@ public class ButtonClickAction implements Runnable {
                 labelWynikowy.setText(s);
             }
             Commons.writeFlush("ok", writer);
+            es.shutdownNow();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
