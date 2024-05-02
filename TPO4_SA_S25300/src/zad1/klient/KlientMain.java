@@ -19,7 +19,10 @@ public class KlientMain {
 
         KlientLogger.log("Uruchamianie...");
         DataState dataState = new DataState();
-        Gui.start(args, dataState); // start GUI
+        Thread guiThread = new Thread(() -> {
+            Gui.start(args, dataState); // start GUI
+        });
+        guiThread.start();
 
         SocketChannel channel = null;
         String server = "localhost";
@@ -60,7 +63,7 @@ public class KlientMain {
         CharBuffer cbuf = null;
 
 
-        System.out.println("Klient: wysyłam - Hi");
+        //System.out.println("Klient: wysyłam - Hi");
         // "Powitanie" do serwera
 
 

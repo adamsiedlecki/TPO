@@ -14,7 +14,10 @@ public class AdminMain {
 
         AdminLogger.log("Uruchamianie...");
         AdminDataState dataState = new AdminDataState();
-        Gui.start(args, dataState); // start GUI
+        Thread guiThread = new Thread(() -> {
+            Gui.start(args, dataState); // start GUI
+        });
+        guiThread.start();
 
         SocketChannel channel = null;
         String server = "localhost";

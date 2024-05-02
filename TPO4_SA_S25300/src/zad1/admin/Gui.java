@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import zad1.klient.DataState;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -16,8 +15,8 @@ public class Gui extends Application {
     private static AdminDataState adminDataState;
 
     public static void start(String[] args, AdminDataState adminDataState) {
-        launch(args);
         Gui.adminDataState = adminDataState;
+        launch(args);
     }
     
     @Override
@@ -73,12 +72,13 @@ public class Gui extends Application {
             Map<String, List<String>> newsOnTopicsFromDataState = adminDataState.newsOnTopics;
             adminDataState.newsChanged.clear();
             for(Map.Entry<String, List<String>> entry :newsOnTopicsFromFields.entrySet()) {
-                if (!newsOnTopicsFromDataState.get(entry.getKey()).equals(entry.getValue())) {
+                if (newsOnTopicsFromDataState.get(entry.getKey()) == null || !newsOnTopicsFromDataState.get(entry.getKey()).equals(entry.getValue())) {
                     adminDataState.newsChanged.add(entry.getKey());
                 }
             }
             adminDataState.newsOnTopics = newsOnTopicsFromFields;
         });
+        root.getChildren().add(sendNewsToServer);
 
 
         primaryStage.setScene(new Scene(root, 300, 250));

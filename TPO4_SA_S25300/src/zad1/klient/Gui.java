@@ -19,8 +19,8 @@ public class Gui extends Application {
 
     private  static TextArea wynikLabel;
     public static void start(String[] args, DataState dataState) {
-        launch(args);
         Gui.dataState = dataState;
+        launch(args);
 
     }
     
