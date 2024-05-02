@@ -43,10 +43,12 @@ public class ClientHandler {
             buffer.get(bytes);
             String message = new String(bytes).trim();
             ServerLogger.log("otrzymalem wiadomosc: "+ message);
+            processMessage(message, clientSocketChannel);
 
             buffer.clear();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            ServerLogger.log(e.getMessage());
+            //throw new RuntimeException(e);
         }
 
     }
@@ -115,11 +117,20 @@ public class ClientHandler {
     private void sendNewsToUser(SocketChannel clientSocketChannel) {
         try {
             Set<String> topics = userTopics.get(clientSocketChannel);
+            if (topics == null) {
+                return;
+            }
             StringBuilder newsBuilder = new StringBuilder();
             //news,sport:news1;news2;news3|gry:xd1;xd2;
             newsBuilder.append("news,");
             for(String topic:  topics) {
                 List<String> news = newsOnTopic.get(topic);
+                if (news == null || news.isEmpty()) {
+                    newsBuilder.append(topic);
+                    newsBuilder.append(";");
+                    newsBuilder.append("Brak newsow dla tego topic'a");
+                    continue;
+                }
                 newsBuilder.append(topic);
                 newsBuilder.append(";");
                 newsBuilder.append(String.join(";", news));
@@ -135,10 +146,9 @@ public class ClientHandler {
 
     private void sendTopicsToUser(SocketChannel clientSocketChannel) {
         try {
-            Set<String> topics = userTopics.get(clientSocketChannel);
             StringBuilder newsBuilder = new StringBuilder();
             newsBuilder.append("topics,");
-            for(String topic:  topics) {
+            for(String topic:  allTopics) {
                 newsBuilder.append(topic);
                 newsBuilder.append(",");
                 clientSocketChannel.write(charset.encode(newsBuilder.toString()));

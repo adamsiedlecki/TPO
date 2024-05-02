@@ -1,6 +1,7 @@
 package zad1.klient;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -35,10 +36,6 @@ public class Gui extends Application {
 
         root.getChildren().add(new Label("Dostepne topics"));
 
-
-
-
-
         root.getChildren().add(topicsRoot);
         Button b = new Button("Zaktualizuj topics");
         root.getChildren().add(b);
@@ -48,6 +45,8 @@ public class Gui extends Application {
 
         b.setOnAction(e -> {
             dataState.userPickedTopics = new HashSet<>();
+            topicsRoot.getChildren().forEach(n -> dataState.userPickedTopics.add(n.getId()));
+
             dataState.clientWantsToUpdateTopics = true;
         });
 
@@ -56,13 +55,19 @@ public class Gui extends Application {
     }
 
     public static void updateDataState() {
-        setTopicsCheckBoxes();
-        setNews();
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                // do your GUI stuff here
+                setTopicsCheckBoxes();
+                setNews();
+            }
+        });
     }
 
     private static void setTopicsCheckBoxes() {
         topicsRoot.getChildren().clear();
-        List<CheckBox> topicsCheckBoxes = new ArrayList<>();
         for(String topic: dataState.allTopics) {
             CheckBox c = new CheckBox(topic);
             topicsRoot.getChildren().add(c);
