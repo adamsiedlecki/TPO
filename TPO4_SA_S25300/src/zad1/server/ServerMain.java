@@ -15,7 +15,7 @@ public class ServerMain {
 
     private Selector selector;
     private ServerSocketChannel serverSocketChannel;
-    public static final Map<SocketChannel, ClientHandler> clientHandlers = new HashMap<>();
+    public static final Map<SocketChannel, ServerClientHandler> clientHandlers = new HashMap<>();
 
     public static void main(String[] args) {
         ServerMain server = new ServerMain();
@@ -67,15 +67,15 @@ public class ServerMain {
         SocketChannel clientSocketChannel = serverSocketChannel.accept();
         clientSocketChannel.configureBlocking(false);
         SelectionKey key = clientSocketChannel.register(selector, SelectionKey.OP_READ);
-        ClientHandler clientHandler = new ClientHandler(clientSocketChannel, key);
-        clientHandlers.put(clientSocketChannel, clientHandler);
+        ServerClientHandler serverClientHandler = new ServerClientHandler(clientSocketChannel, key);
+        clientHandlers.put(clientSocketChannel, serverClientHandler);
         ServerLogger.log("zaakceptowano nowego klienta. Aktualna liczba klientow: " + clientHandlers.size());
     }
 
     private void readMessage(SelectionKey key) throws IOException {
         SocketChannel clientSocketChannel = (SocketChannel) key.channel();
-        ClientHandler clientHandler = clientHandlers.get(clientSocketChannel);
-        clientHandler.readMessage();
+        ServerClientHandler serverClientHandler = clientHandlers.get(clientSocketChannel);
+        serverClientHandler.readMessage();
     }
 
 }

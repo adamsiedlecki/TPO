@@ -72,6 +72,7 @@ public class KlientMain {
 
             if (dataState.clientWantsToUpdateTopics) {
                 dataState.clientWantsToUpdateTopics = false;
+                KlientLogger.log("Probuje sie zasubskrybowac na: " + dataState.userPickedTopics);
                 channel.write(charset.encode("subscribe," + String.join(",", dataState.userPickedTopics)));
             }
 
@@ -120,6 +121,7 @@ public class KlientMain {
                     }
                 } else if(messageType.equals("news")) {
                     Map<String, List<String>> newsOnTopics = dataState.newsOnTopics;
+                    newsOnTopics.clear();
                     String[] topicsSplit = split[1].split("\\|");
                     for (int i = 0; i < topicsSplit.length; i++) {
                         String topicString = topicsSplit[i];
@@ -128,7 +130,7 @@ public class KlientMain {
                         List<String> newsList = new ArrayList<>();
                         newsOnTopics.put(topicName, newsList);
                         for (int j = 1; j < topicSplit.length; j++) {
-                            newsList.add(topicSplit[i]);
+                            newsList.add(topicSplit[j]);
                         }
                     }
                 }

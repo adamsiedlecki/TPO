@@ -2,6 +2,7 @@ package zad1.klient;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Gui extends Application {
 
@@ -37,15 +39,19 @@ public class Gui extends Application {
         root.getChildren().add(new Label("Dostepne topics"));
 
         root.getChildren().add(topicsRoot);
-        Button b = new Button("Zaktualizuj topics");
-        root.getChildren().add(b);
+        Button aktualizacjaSubskrybowanychTopics = new Button("Zaktualizuj subskrybcje topics");
+        root.getChildren().add(aktualizacjaSubskrybowanychTopics);
 
         root.getChildren().add(new Label("Newsy: "));
         root.getChildren().add(wynikLabel);
 
-        b.setOnAction(e -> {
-            dataState.userPickedTopics = new HashSet<>();
-            topicsRoot.getChildren().forEach(n -> dataState.userPickedTopics.add(n.getId()));
+        aktualizacjaSubskrybowanychTopics.setOnAction(e -> {
+            dataState.userPickedTopics.clear();
+            topicsRoot.getChildren().forEach(n -> {
+                if (((CheckBox)n).isSelected()) {
+                    dataState.userPickedTopics.add(n.getId());
+                }
+            });
 
             dataState.clientWantsToUpdateTopics = true;
         });
@@ -70,6 +76,7 @@ public class Gui extends Application {
         topicsRoot.getChildren().clear();
         for(String topic: dataState.allTopics) {
             CheckBox c = new CheckBox(topic);
+            c.setId(topic);
             topicsRoot.getChildren().add(c);
             if (dataState.userPickedTopics.contains(topic)) {
                 c.setSelected(true);
@@ -91,6 +98,7 @@ public class Gui extends Application {
                 sb.append("\n");
             });
             sb.append("----------");
+            sb.append("\n");
         }
         wynikLabel.setText(sb.toString());
     }

@@ -6,9 +6,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class ClientHandler {
+public class ServerClientHandler {
 
 
     private static final Set<String> allTopics = new HashSet<>();
@@ -22,7 +21,7 @@ public class ClientHandler {
     private SelectionKey key;
     private ByteBuffer buffer;
 
-    public ClientHandler(SocketChannel clientSocketChannel, SelectionKey key) {
+    public ServerClientHandler(SocketChannel clientSocketChannel, SelectionKey key) {
         this.clientSocketChannel = clientSocketChannel;
         this.key = key;
         buffer = ByteBuffer.allocate(1024);
@@ -121,7 +120,7 @@ public class ClientHandler {
                 return;
             }
             StringBuilder newsBuilder = new StringBuilder();
-            //news,sport:news1;news2;news3|gry:xd1;xd2;
+            //news,sport;news1;news2;news3|gry;xd1;xd2;
             newsBuilder.append("news,");
             for(String topic:  topics) {
                 List<String> news = newsOnTopic.get(topic);
@@ -129,15 +128,16 @@ public class ClientHandler {
                     newsBuilder.append(topic);
                     newsBuilder.append(";");
                     newsBuilder.append("Brak newsow dla tego topic'a");
+                    newsBuilder.append("|");
                     continue;
                 }
                 newsBuilder.append(topic);
                 newsBuilder.append(";");
                 newsBuilder.append(String.join(";", news));
                 newsBuilder.append("|");
-                clientSocketChannel.write(charset.encode(newsBuilder.toString()));
-                buffer.clear();
             }
+            clientSocketChannel.write(charset.encode(newsBuilder.toString()));
+            buffer.clear();
         } catch (IOException e) {
             ServerLogger.log("Wydarzyl sie blad podczas wysylania news do klienta: " + e.getMessage());
             throw new RuntimeException(e);
