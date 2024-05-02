@@ -8,11 +8,18 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class KlientMain {
 
     public static void main(String[] args) throws IOException {
+
+        KlientLogger.log("Uruchamianie...");
+        DataState dataState = new DataState();
+        Gui.start(args, dataState); // start GUI
 
         SocketChannel channel = null;
         String server = "localhost";
@@ -39,10 +46,9 @@ public class KlientMain {
             // ...
         }
 
-        System.out.println("\nKlient: jestem połączony z serwerem ...");
+        KlientLogger.log("Polaczylem sie z serwerem");
 
         Charset charset  = Charset.forName("ISO-8859-2");
-        Scanner scanner = new Scanner(System.in);
 
         // Alokowanie bufora bajtowego
         // allocateDirect pozwala na wykorzystanie mechanizmów sprzętowych
@@ -56,14 +62,19 @@ public class KlientMain {
 
         System.out.println("Klient: wysyłam - Hi");
         // "Powitanie" do serwera
-        channel.write(charset.encode("Hi\n"));
+
 
         // pętla czytania
         while (true) {
 
+            if (dataState.clientWantsToUpdateTopics) {
+                dataState.clientWantsToUpdateTopics = false;
+                channel.write(charset.encode("subscribe," + String.join(",", dataState.userPickedTopics)));
+            }
+
             //cbuf = CharBuffer.wrap("coś" + "\n");
 
-            inBuf.clear();	// opróżnienie bufora wejściowego
+            inBuf.clear();    // opróżnienie bufora wejściowego
             int readBytes = channel.read(inBuf); // czytanie nieblokujące
             // natychmiast zwraca liczbę
             // przeczytanych bajtów
@@ -81,12 +92,13 @@ public class KlientMain {
             else if (readBytes == -1) { // kanał zamknięty po stronie serwera
                 // dalsze czytanie niemożlwe
                 // ...
+                KlientLogger.log("kanal zamknięty po stronie serwera");
                 break;
             }
-            else {		// dane dostępne w buforze
+            else {        // dane dostępne w buforze
                 //System.out.println("coś jest od serwera");
 
-                inBuf.flip();	// przestawienie bufora
+                inBuf.flip();    // przestawienie bufora
 
                 // pobranie danych z bufora
                 // ew. decyzje o tym czy mamy komplet danych - wtedy break
@@ -94,23 +106,44 @@ public class KlientMain {
                 cbuf = charset.decode(inBuf);
 
                 String odSerwera = cbuf.toString();
+                KlientLogger.log("Klient: serwer właśnie odpisał ... " + odSerwera);
 
-                System.out.println("Klient: serwer właśnie odpisał ... " + odSerwera);
+                String[] split = odSerwera.split(",");
+                String messageType = split[0];
+                if(messageType.equals("topics")) {
+                    dataState.allTopics = new HashSet<>();
+                    for (int i = 1; i < split.length; i++) {
+                        dataState.allTopics.add(split[i]);
+                    }
+                } else if(messageType.equals("news")) {
+                    Map<String, List<String>> newsOnTopics = dataState.newsOnTopics;
+                    String[] topicsSplit = split[1].split("\\|");
+                    for (int i = 0; i < topicsSplit.length; i++) {
+                        String topicString = topicsSplit[i];
+                        String[] topicSplit = topicString.split(";");
+                        String topicName = topicSplit[0];
+                        List<String> newsList = new ArrayList<>();
+                        newsOnTopics.put(topicName, newsList);
+                        for (int j = 1; j < topicSplit.length; j++) {
+                            newsList.add(topicSplit[i]);
+                        }
+                    }
+                }
+
+                Gui.updateDataState();
                 cbuf.clear();
 
-                if (odSerwera.equals("Bye")) break;
+                //if (odSerwera.equals("Bye")) break;
             }
 
-            // Teraz klient pisze do serwera poprzez Scanner
-            String input = scanner.nextLine();
-            cbuf = CharBuffer.wrap(input + "\n");
-            ByteBuffer outBuf = charset.encode(cbuf);
-            channel.write(outBuf);
-
-            System.out.println("Klient: piszę " + input);
+//            // Teraz klient pisze do serwera poprzez Scanner
+//            cbuf = CharBuffer.wrap(input + "\n");
+//            ByteBuffer outBuf = charset.encode(cbuf);
+//            channel.write(outBuf);
+//
+//            System.out.println("Klient: piszę " + input);
         }
 
-        scanner.close();
 
     }
 }
