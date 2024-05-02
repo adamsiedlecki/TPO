@@ -85,18 +85,9 @@ public class KlientMain {
 
             inBuf.clear();    // opróżnienie bufora wejściowego
             int readBytes = channel.read(inBuf); // czytanie nieblokujące
-            // natychmiast zwraca liczbę
-            // przeczytanych bajtów
-
-            // System.out.println("readBytes =  " + readBytes);
 
             if (readBytes == 0) {                              // jeszcze nie ma danych
-                //System.out.println("zero bajtów");
-
-                // jakieś (krótkotrwałe) działania np. info o upływającym czasie
-
                 continue;
-
             }
             else if (readBytes == -1) { // kanał zamknięty po stronie serwera
                 // dalsze czytanie niemożlwe
@@ -115,45 +106,45 @@ public class KlientMain {
                 cbuf = charset.decode(inBuf);
 
                 String odSerwera = cbuf.toString();
-                KlientLogger.log("Klient: serwer właśnie odpisał ... " + odSerwera);
+                KlientLogger.log("Od serwera: " + odSerwera);
+                String[] wiadomosciSerwera = odSerwera.split("\n");
 
-                String[] split = odSerwera.split(",");
-                String messageType = split[0];
-                if(messageType.equals("topics")) {
-                    dataState.allTopics = new HashSet<>();
-                    for (int i = 1; i < split.length; i++) {
-                        dataState.allTopics.add(split[i]);
-                    }
-                } else if(messageType.equals("news")) {
-                    Map<String, List<String>> newsOnTopics = dataState.newsOnTopics;
-                    newsOnTopics.clear();
-                    String[] topicsSplit = split[1].split("\\|");
-                    for (int i = 0; i < topicsSplit.length; i++) {
-                        String topicString = topicsSplit[i];
-                        String[] topicSplit = topicString.split(";");
-                        String topicName = topicSplit[0];
-                        List<String> newsList = new ArrayList<>();
-                        newsOnTopics.put(topicName, newsList);
-                        for (int j = 1; j < topicSplit.length; j++) {
-                            newsList.add(topicSplit[j]);
-                        }
-                    }
+                for (String wiadomosc: wiadomosciSerwera) {
+                    handleSerwerMessage(dataState, wiadomosc);
                 }
 
                 Gui.updateDataState();
                 cbuf.clear();
 
-                //if (odSerwera.equals("Bye")) break;
             }
 
-//            // Teraz klient pisze do serwera poprzez Scanner
-//            cbuf = CharBuffer.wrap(input + "\n");
-//            ByteBuffer outBuf = charset.encode(cbuf);
-//            channel.write(outBuf);
-//
-//            System.out.println("Klient: piszę " + input);
         }
 
 
+    }
+
+    private static void handleSerwerMessage(DataState dataState, String odSerwera) {
+        String[] split = odSerwera.split(",");
+        String messageType = split[0];
+        if(messageType.equals("topics")) {
+            dataState.allTopics = new HashSet<>();
+            for (int i = 1; i < split.length; i++) {
+                dataState.allTopics.add(split[i]);
+            }
+        } else if(messageType.equals("news")) {
+            Map<String, List<String>> newsOnTopics = dataState.newsOnTopics;
+            newsOnTopics.clear();
+            String[] topicsSplit = split[1].split("\\|");
+            for (int i = 0; i < topicsSplit.length; i++) {
+                String topicString = topicsSplit[i];
+                String[] topicSplit = topicString.split(";");
+                String topicName = topicSplit[0];
+                List<String> newsList = new ArrayList<>();
+                newsOnTopics.put(topicName, newsList);
+                for (int j = 1; j < topicSplit.length; j++) {
+                    newsList.add(topicSplit[j]);
+                }
+            }
+        }
     }
 }

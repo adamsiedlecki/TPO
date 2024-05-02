@@ -151,9 +151,9 @@ public class ServerClientHandler {
             for(String topic:  allTopics) {
                 topicsBuilder.append(topic);
                 topicsBuilder.append(",");
-                clientSocketChannel.write(charset.encode(topicsBuilder.toString()));
-                ServerLogger.log("Wysylam topics do usera: "+ topicsBuilder.toString());
             }
+            clientSocketChannel.write(charset.encode(topicsBuilder.toString()));
+            ServerLogger.log("Wysylam topics do usera: "+ topicsBuilder.toString());
         } catch (IOException e) {
             ServerLogger.log("Wydarzyl sie blad podczas wysylania topics do klienta: " + e.getMessage());
             throw new RuntimeException(e);

@@ -38,17 +38,17 @@ public class AdminMain {
                 // lub wykonywanie jakichś innych (krótkotrwałych) działań
             }
 
-        } catch(UnknownHostException exc) {
+        } catch (UnknownHostException exc) {
             System.err.println("Uknown host " + server);
             // ...
-        } catch(Exception exc) {
+        } catch (Exception exc) {
             exc.printStackTrace();
             // ...
         }
 
         AdminLogger.log("Polaczylem sie z serwerem");
 
-        Charset charset  = Charset.forName("ISO-8859-2");
+        Charset charset = Charset.forName("ISO-8859-2");
 
         // Alokowanie bufora bajtowego
         // allocateDirect pozwala na wykorzystanie mechanizmów sprzętowych
@@ -73,15 +73,16 @@ public class AdminMain {
                     channel.write(charset.encode("updateTopics," + String.join(",", dataState.allTopics)));
                 } else if (!dataState.newsChanged.isEmpty()) {
                     Iterator<String> newsChangedIterator = dataState.newsChanged.iterator();
-                    while(newsChangedIterator.hasNext()) {
+                    while (newsChangedIterator.hasNext()) {
                         String topic = newsChangedIterator.next();
                         List<String> news = dataState.newsOnTopics.get(topic);
-                        channel.write(charset.encode("newsOnTopic," + topic+"," + String.join(",", news)));
-                        dataState.newsChanged.remove(topic);
+                        channel.write(charset.encode("newsOnTopic," + topic + "," + String.join(",", news)));
+                        newsChangedIterator.remove();
                     }
                 }
             } catch (Exception e) {
                 KlientLogger.log("blad podczas komunikacji z serwerem: " + e.getMessage());
+                throw e;
             }
 
 
@@ -101,62 +102,27 @@ public class AdminMain {
 
                 continue;
 
-            }
-            else if (readBytes == -1) { // kanał zamknięty po stronie serwera
+            } else if (readBytes == -1) { // kanał zamknięty po stronie serwera
                 // dalsze czytanie niemożlwe
                 // ...
                 AdminLogger.log("kanal zamknięty po stronie serwera");
                 break;
-            }
-            else {        // dane dostępne w buforze
+            } else {        // dane dostępne w buforze
                 //System.out.println("coś jest od serwera");
 
-//                inBuf.flip();    // przestawienie bufora
-//
-//                // pobranie danych z bufora
-//                // ew. decyzje o tym czy mamy komplet danych - wtedy break
-//                // czy też mamy jeszcze coś do odebrania z serwera - kontynuacja
-//                cbuf = charset.decode(inBuf);
-//
-//                String odSerwera = cbuf.toString();
-//                AdminLogger.log("Klient: serwer właśnie odpisał ... " + odSerwera);
-//
-//                String[] split = odSerwera.split(",");
-//                String messageType = split[0];
-//                if(messageType.equals("topics")) {
-//                    dataState.allTopics = new HashSet<>();
-//                    for (int i = 1; i < split.length; i++) {
-//                        dataState.allTopics.add(split[i]);
-//                    }
-//                } else if(messageType.equals("news")) {
-//                    Map<String, List<String>> newsOnTopics = dataState.newsOnTopics;
-//                    String[] topicsSplit = split[1].split("\\|");
-//                    for (int i = 0; i < topicsSplit.length; i++) {
-//                        String topicString = topicsSplit[i];
-//                        String[] topicSplit = topicString.split(";");
-//                        String topicName = topicSplit[0];
-//                        List<String> newsList = new ArrayList<>();
-//                        newsOnTopics.put(topicName, newsList);
-//                        for (int j = 1; j < topicSplit.length; j++) {
-//                            newsList.add(topicSplit[i]);
-//                        }
-//                    }
-//                }
-//
-//                Gui.updateDataState();
-//                cbuf.clear();
+                inBuf.flip();    // przestawienie bufora
 
-                //if (odSerwera.equals("Bye")) break;
+                // pobranie danych z bufora
+                // ew. decyzje o tym czy mamy komplet danych - wtedy break
+                // czy też mamy jeszcze coś do odebrania z serwera - kontynuacja
+                cbuf = charset.decode(inBuf);
+
+                String odSerwera = cbuf.toString();
+                AdminLogger.log("Od serwera: " + odSerwera);
+                cbuf.clear();
             }
 
-//            // Teraz klient pisze do serwera poprzez Scanner
-//            cbuf = CharBuffer.wrap(input + "\n");
-//            ByteBuffer outBuf = charset.encode(cbuf);
-//            channel.write(outBuf);
-//
-//            System.out.println("Klient: piszę " + input);
+
         }
-
-
     }
 }
