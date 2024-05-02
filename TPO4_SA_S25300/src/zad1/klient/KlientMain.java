@@ -23,6 +23,11 @@ public class KlientMain {
             Gui.start(args, dataState); // start GUI
         });
         guiThread.start();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         SocketChannel channel = null;
         String server = "localhost";

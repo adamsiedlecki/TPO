@@ -62,13 +62,10 @@ public class Gui extends Application {
 
     public static void updateDataState() {
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                // do your GUI stuff here
-                setTopicsCheckBoxes();
-                setNews();
-            }
+        Platform.runLater(() -> {
+            // do your GUI stuff here
+            setTopicsCheckBoxes();
+            setNews();
         });
     }
 

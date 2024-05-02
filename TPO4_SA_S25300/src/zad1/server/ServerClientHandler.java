@@ -92,7 +92,7 @@ public class ServerClientHandler {
             for (int i = 2; i < split.length; i++) {
                 news.add(split[i]);
             }
-            newsOnTopic.replace(topic, news);
+            newsOnTopic.put(topic, news);
             sendNewsToUsers(); // od razu aktualizacja
         } else {
             ServerLogger.log("Otrzymano inny rodzaj wiadomosci: " + messageType);
@@ -106,7 +106,7 @@ public class ServerClientHandler {
         }
     }
 
-    private void sendTopicsToUsers() {
+    public void sendTopicsToUsers() {
         Set<SocketChannel> clients = ServerMain.clientHandlers.keySet();
         for(SocketChannel client: clients) {
             sendTopicsToUser(client);
@@ -146,13 +146,13 @@ public class ServerClientHandler {
 
     private void sendTopicsToUser(SocketChannel clientSocketChannel) {
         try {
-            StringBuilder newsBuilder = new StringBuilder();
-            newsBuilder.append("topics,");
+            StringBuilder topicsBuilder = new StringBuilder();
+            topicsBuilder.append("topics,");
             for(String topic:  allTopics) {
-                newsBuilder.append(topic);
-                newsBuilder.append(",");
-                clientSocketChannel.write(charset.encode(newsBuilder.toString()));
-                buffer.clear();
+                topicsBuilder.append(topic);
+                topicsBuilder.append(",");
+                clientSocketChannel.write(charset.encode(topicsBuilder.toString()));
+                ServerLogger.log("Wysylam topics do usera: "+ topicsBuilder.toString());
             }
         } catch (IOException e) {
             ServerLogger.log("Wydarzyl sie blad podczas wysylania topics do klienta: " + e.getMessage());

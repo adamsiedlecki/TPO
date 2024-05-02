@@ -70,6 +70,7 @@ public class ServerMain {
         ServerClientHandler serverClientHandler = new ServerClientHandler(clientSocketChannel, key);
         clientHandlers.put(clientSocketChannel, serverClientHandler);
         ServerLogger.log("zaakceptowano nowego klienta. Aktualna liczba klientow: " + clientHandlers.size());
+        serverClientHandler.sendTopicsToUsers(); // nadmiarowo do wszystkich a nie tylko do nowego - nie chce mi się kompilokować kodu
     }
 
     private void readMessage(SelectionKey key) throws IOException {

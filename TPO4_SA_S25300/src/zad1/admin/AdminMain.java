@@ -1,5 +1,7 @@
 package zad1.admin;
 
+import zad1.klient.KlientLogger;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -65,17 +67,23 @@ public class AdminMain {
         // pętla czytania
         while (true) {
 
-            if (dataState.adminWantsToUpdateTopics) {
-                dataState.adminWantsToUpdateTopics = false;
-                channel.write(charset.encode("updateTopics," + String.join(",", dataState.allTopics)));
-            } else if (!dataState.newsChanged.isEmpty()) {
-                Iterator<String> newsChangedIterator = dataState.newsChanged.iterator();
-                while(newsChangedIterator.hasNext()) {
-                    String topic = newsChangedIterator.next();
-                    List<String> news = dataState.newsOnTopics.get(topic);
-                    channel.write(charset.encode("newsOnTopic," + topic+"," + String.join(",", news)));
+            try {
+                if (dataState.adminWantsToUpdateTopics) {
+                    dataState.adminWantsToUpdateTopics = false;
+                    channel.write(charset.encode("updateTopics," + String.join(",", dataState.allTopics)));
+                } else if (!dataState.newsChanged.isEmpty()) {
+                    Iterator<String> newsChangedIterator = dataState.newsChanged.iterator();
+                    while(newsChangedIterator.hasNext()) {
+                        String topic = newsChangedIterator.next();
+                        List<String> news = dataState.newsOnTopics.get(topic);
+                        channel.write(charset.encode("newsOnTopic," + topic+"," + String.join(",", news)));
+                        dataState.newsChanged.remove(topic);
+                    }
                 }
+            } catch (Exception e) {
+                KlientLogger.log("blad podczas komunikacji z serwerem: " + e.getMessage());
             }
+
 
             //cbuf = CharBuffer.wrap("coś" + "\n");
 
