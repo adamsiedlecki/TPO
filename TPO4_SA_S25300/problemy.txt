@@ -1,0 +1,4 @@
+mieszanie się news gdy jest tylko jeden na kategorię
+
+pętla: (po wyłączeniu admina)
+SERVER:: Istniejące połączenie zostało gwałtownie zamknięte przez zdalnego hosta

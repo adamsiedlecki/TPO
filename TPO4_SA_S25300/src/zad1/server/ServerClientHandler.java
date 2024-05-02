@@ -109,6 +109,9 @@ public class ServerClientHandler {
     public void sendTopicsToUsers() {
         Set<SocketChannel> clients = ServerMain.clientHandlers.keySet();
         for(SocketChannel client: clients) {
+            if (!client.isConnected()) {
+                continue;
+            }
             sendTopicsToUser(client);
         }
     }
