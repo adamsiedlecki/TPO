@@ -1,4 +1,2 @@
-mieszanie się news gdy jest tylko jeden na kategorię
-
-pętla: (po wyłączeniu admina)
-SERVER:: Istniejące połączenie zostało gwałtownie zamknięte przez zdalnego hosta
+tematy nie usuwają się za pierwszym kliknięciem
+newsy nie usuwają się od razu gdy jest ich wiele

@@ -42,7 +42,11 @@ public class ServerClientHandler {
             buffer.get(bytes);
             String message = new String(bytes).trim();
             ServerLogger.log("otrzymalem wiadomosc: "+ message);
-            processMessage(message, clientSocketChannel);
+            String[] wiadomosci = message.split("\n");
+
+            for(String splitedWiadomosc: wiadomosci) {
+                processMessage(splitedWiadomosc, clientSocketChannel);
+            }
 
             buffer.clear();
         } catch (IOException e) {
@@ -92,6 +96,8 @@ public class ServerClientHandler {
                 news.add(split[i]);
             }
             newsOnTopic.put(topic, news);
+            ServerLogger.log("Stan bazy newsOnTopic: " + newsOnTopic);
+            ServerLogger.log("Stan bazy userTopics: " + userTopics);
             sendNewsToUsers(); // od razu aktualizacja
         } else {
             ServerLogger.log("Otrzymano inny rodzaj wiadomosci: " + messageType);

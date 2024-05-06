@@ -72,9 +72,9 @@ public class Gui extends Application {
             Map<String, List<String>> newsOnTopicsFromDataState = adminDataState.newsOnTopics;
             adminDataState.newsChanged.clear();
             for(Map.Entry<String, List<String>> entry :newsOnTopicsFromFields.entrySet()) {
-                if (newsOnTopicsFromDataState.get(entry.getKey()) == null || !newsOnTopicsFromDataState.get(entry.getKey()).equals(entry.getValue())) {
+                //if (newsOnTopicsFromDataState.get(entry.getKey()) == null || !newsOnTopicsFromDataState.get(entry.getKey()).equals(entry.getValue())) {
                     adminDataState.newsChanged.add(entry.getKey());
-                }
+                //}
             }
             adminDataState.newsOnTopics = newsOnTopicsFromFields;
         });

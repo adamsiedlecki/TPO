@@ -62,7 +62,7 @@ public class AdminMain {
                         while (newsChangedIterator.hasNext()) {
                             String topic = newsChangedIterator.next();
                             List<String> news = dataState.newsOnTopics.get(topic);
-                            channel.write(charset.encode("newsOnTopic," + topic + "," + String.join(",", news)));
+                            channel.write(charset.encode("newsOnTopic," + topic + "," + String.join(",", news) +"\n"));
                             newsChangedIterator.remove();
                         }
                     }
