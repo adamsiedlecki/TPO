@@ -46,8 +46,7 @@ public class ServerClientHandler {
 
             buffer.clear();
         } catch (IOException e) {
-            ServerLogger.log(e.getMessage());
-            //throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
 
     }
@@ -139,8 +138,9 @@ public class ServerClientHandler {
                 newsBuilder.append(String.join(";", news));
                 newsBuilder.append("|");
             }
-            clientSocketChannel.write(charset.encode(newsBuilder.toString()));
-            buffer.clear();
+            String news = newsBuilder.toString();
+            ServerLogger.log("Wysylam do klienta newsy: " + news);
+            clientSocketChannel.write(charset.encode(news));
         } catch (IOException e) {
             ServerLogger.log("Wydarzyl sie blad podczas wysylania news do klienta: " + e.getMessage());
             throw new RuntimeException(e);

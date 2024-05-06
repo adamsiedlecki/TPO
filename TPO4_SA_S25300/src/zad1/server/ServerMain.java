@@ -57,9 +57,9 @@ public class ServerMain {
 
     private void usunRozlaczonych() throws IOException {
         List<SocketChannel> disconnected = clientHandlers.keySet().stream().filter(s -> !s.isConnected()).collect(Collectors.toList());
-        for (int i = 0; i < disconnected.size(); i++) {
-            clientHandlers.remove(disconnected.get(i));
-            ServerLogger.log("Usuwam rozlaczonego klienta: " + disconnected.get(i).getLocalAddress());
+        for (SocketChannel socketChannel : disconnected) {
+            clientHandlers.remove(socketChannel);
+            ServerLogger.log("Usuwam rozlaczonego klienta: " + socketChannel.getLocalAddress());
         }
     }
 
@@ -70,13 +70,19 @@ public class ServerMain {
         ServerClientHandler serverClientHandler = new ServerClientHandler(clientSocketChannel, key);
         clientHandlers.put(clientSocketChannel, serverClientHandler);
         ServerLogger.log("zaakceptowano nowego klienta. Aktualna liczba klientow: " + clientHandlers.size());
-        serverClientHandler.sendTopicsToUsers(); // nadmiarowo do wszystkich a nie tylko do nowego - nie chce mi się kompilokować kodu
+        serverClientHandler.sendTopicsToUsers(); // nadmiarowo do wszystkich a nie tylko do nowego - nie chce mi się kompliokować kodu
     }
 
     private void readMessage(SelectionKey key) throws IOException {
         SocketChannel clientSocketChannel = (SocketChannel) key.channel();
         ServerClientHandler serverClientHandler = clientHandlers.get(clientSocketChannel);
-        serverClientHandler.readMessage();
+        try {
+            serverClientHandler.readMessage();
+        } catch (Exception e) {
+            ServerLogger.log("Wydarzyl sie blad podczas odczytu od klienta" + e.getMessage());
+            clientHandlers.remove(clientSocketChannel);
+            clientSocketChannel.close();
+        }
     }
 
 }

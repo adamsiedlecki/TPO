@@ -8,10 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class KlientMain {
 
@@ -128,22 +125,17 @@ public class KlientMain {
         String messageType = split[0];
         if(messageType.equals("topics")) {
             dataState.allTopics = new HashSet<>();
-            for (int i = 1; i < split.length; i++) {
-                dataState.allTopics.add(split[i]);
-            }
+            dataState.allTopics.addAll(Arrays.asList(split).subList(1, split.length));
         } else if(messageType.equals("news")) {
             Map<String, List<String>> newsOnTopics = dataState.newsOnTopics;
             newsOnTopics.clear();
             String[] topicsSplit = split[1].split("\\|");
-            for (int i = 0; i < topicsSplit.length; i++) {
-                String topicString = topicsSplit[i];
+            for (String topicString : topicsSplit) {
                 String[] topicSplit = topicString.split(";");
                 String topicName = topicSplit[0];
                 List<String> newsList = new ArrayList<>();
                 newsOnTopics.put(topicName, newsList);
-                for (int j = 1; j < topicSplit.length; j++) {
-                    newsList.add(topicSplit[j]);
-                }
+                newsList.addAll(Arrays.asList(topicSplit).subList(1, topicSplit.length));
             }
         }
     }
