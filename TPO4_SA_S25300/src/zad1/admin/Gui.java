@@ -40,7 +40,7 @@ public class Gui extends Application {
             while(iterator.hasNext()) {
                 Node next = iterator.next();
                 if(Stream.of(topics).noneMatch(t -> t.equals(next.getId()))) {
-                    newsyRoot.getChildren().remove(next);
+                    iterator.remove();
                 }
             }
             for(String topic: topics) {
