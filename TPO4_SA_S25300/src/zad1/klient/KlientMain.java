@@ -129,6 +129,9 @@ public class KlientMain {
         } else if(messageType.equals("news")) {
             Map<String, List<String>> newsOnTopics = dataState.newsOnTopics;
             newsOnTopics.clear();
+            if (split.length == 1) {
+                return; // brak newsow dla tego klienta
+            }
             String[] topicsSplit = split[1].split("\\|");
             for (String topicString : topicsSplit) {
                 String[] topicSplit = topicString.split(";");
