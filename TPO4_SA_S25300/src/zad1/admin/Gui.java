@@ -36,6 +36,7 @@ public class Gui extends Application {
         VBox newsyRoot = new VBox();
         sendTopicsToServer.setOnAction(e -> {
             String[] topics = topicsTextField.getText().split(",");
+            AdminLogger.log("admin chce zaktualizowac topics: " + Arrays.toString(topics));
             Iterator<Node> iterator = newsyRoot.getChildren().iterator();
             while(iterator.hasNext()) {
                 Node next = iterator.next();
