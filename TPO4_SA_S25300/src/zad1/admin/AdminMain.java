@@ -56,13 +56,15 @@ public class AdminMain {
                 try {
                     if (dataState.adminWantsToUpdateTopics) {
                         dataState.adminWantsToUpdateTopics = false;
-                        channel.write(charset.encode("updateTopics," + String.join(",", dataState.allTopics)));
+                        channel.write(charset.encode("updateTopics," + String.join(",", dataState.allTopics)+"\n"));
                     } else if (!dataState.newsChanged.isEmpty()) {
                         Iterator<String> newsChangedIterator = dataState.newsChanged.iterator();
                         while (newsChangedIterator.hasNext()) {
                             String topic = newsChangedIterator.next();
                             List<String> news = dataState.newsOnTopics.get(topic);
-                            channel.write(charset.encode("newsOnTopic," + topic + "," + String.join(",", news) +"\n"));
+                            String wiadomosc = "newsOnTopic," + topic + "," + String.join(",", news) +"\n";
+                            AdminLogger.log("admin aktualizuje news: " + wiadomosc);
+                            channel.write(charset.encode(wiadomosc));
                             newsChangedIterator.remove();
                         }
                     }

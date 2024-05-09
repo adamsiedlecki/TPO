@@ -2,6 +2,7 @@ package zad1.server;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
@@ -20,6 +21,7 @@ public class ServerClientHandler {
     private SocketChannel clientSocketChannel;
     private SelectionKey key;
     private ByteBuffer buffer;
+    private StringBuffer reqString = new StringBuffer();
 
     public ServerClientHandler(SocketChannel clientSocketChannel, SelectionKey key) {
         this.clientSocketChannel = clientSocketChannel;
@@ -29,26 +31,47 @@ public class ServerClientHandler {
 
     public void readMessage() {
         ServerLogger.log("czytam");
+        buffer.clear();
 
         try {
-            int bytesRead = clientSocketChannel.read(buffer);
-            if (bytesRead == -1) {
-//                clientSocketChannel.close(); // chce trzymac polaczenia
-//                key.cancel();
-                return;
+            List<String> messages = new ArrayList<>();
+            readLoop:                    // Czytanie jest nieblokujące
+            while (true) {               // kontynujemy je dopóki
+                int n = clientSocketChannel.read(buffer);   // nie natrafimy na koniec wiersza
+                if (n == -1) {
+                    return;
+                }
+                if (n == 0 && reqString.length() == 0) {
+                    break readLoop;
+                }
+                if (n > 0) {
+                    buffer.flip();
+                    CharBuffer cbuf = charset.decode(buffer);
+                    while(cbuf.hasRemaining()) {
+                        char c = cbuf.get();
+                        //System.out.println(c);
+                        if (c == '\r' || c == '\n')  {
+                            messages.add(reqString.toString()); // serwer moze doświiadczyć wielu wiadomości naraz
+                            reqString.setLength(0);
+                            if (!cbuf.hasRemaining()) {
+                                break readLoop;
+                            }
+                        }
+                        else {
+                            //System.out.println(c);
+                            reqString.append(c);
+                        }
+                    }
+                }
             }
-            buffer.flip();
-            byte[] bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            String message = new String(bytes).trim();
-            ServerLogger.log("otrzymalem wiadomosc: "+ message);
-            String[] wiadomosci = message.split("\n");
-
-            for(String splitedWiadomosc: wiadomosci) {
-                processMessage(splitedWiadomosc, clientSocketChannel);
+            if (!messages.isEmpty()) {
+                buffer.clear();
+                for (String message: messages) {
+                    ServerLogger.log("otrzymalem wiadomosc: "+ message);
+                    processMessage(message, clientSocketChannel);
+                }
             }
 
-            buffer.clear();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -144,6 +167,7 @@ public class ServerClientHandler {
                 newsBuilder.append(String.join(";", news));
                 newsBuilder.append("|");
             }
+            newsBuilder.append("\n");
             String news = newsBuilder.toString();
             ServerLogger.log("Wysylam do klienta newsy: " + news);
             clientSocketChannel.write(charset.encode(news));
@@ -161,6 +185,7 @@ public class ServerClientHandler {
                 topicsBuilder.append(topic);
                 topicsBuilder.append(",");
             }
+            topicsBuilder.append("\n");
             clientSocketChannel.write(charset.encode(topicsBuilder.toString()));
             ServerLogger.log("Wysylam topics do usera: "+ topicsBuilder.toString());
         } catch (IOException e) {

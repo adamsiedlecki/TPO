@@ -36,7 +36,7 @@ public class KlientMain {
             channel.configureBlocking(false);
             channel.connect(new InetSocketAddress(server, port));
 
-            System.out.print("Klient: łączę się z serwerem ...");
+            System.out.println("Klient: łączę się z serwerem ...");
 
             while (!channel.finishConnect()) {
                 // ew. pokazywanie czasu łączenia (np. pasek postępu)
@@ -61,8 +61,8 @@ public class KlientMain {
         // Uwaga: taki bufor powinien być alokowany jednokrotnie
         // i wielokrotnie wykorzystywany w operacjach we/wy
         int rozmiar_bufora = 1024;
-        ByteBuffer inBuf = ByteBuffer.allocateDirect(rozmiar_bufora);
-        CharBuffer cbuf = null;
+        final ByteBuffer inBuf = ByteBuffer.allocateDirect(rozmiar_bufora);
+        final StringBuffer reqString = new StringBuffer();
 
 
         //System.out.println("Klient: wysyłam - Hi");
@@ -75,46 +75,42 @@ public class KlientMain {
             if (dataState.clientWantsToUpdateTopics) {
                 dataState.clientWantsToUpdateTopics = false;
                 KlientLogger.log("Probuje sie zasubskrybowac na: " + dataState.userPickedTopics);
-                channel.write(charset.encode("subscribe," + String.join(",", dataState.userPickedTopics)));
+                channel.write(charset.encode("subscribe," + String.join(",", dataState.userPickedTopics) + "\n"));
             }
 
-            //cbuf = CharBuffer.wrap("coś" + "\n");
 
-            inBuf.clear();    // opróżnienie bufora wejściowego
-            int readBytes = channel.read(inBuf); // czytanie nieblokujące
-
-            if (readBytes == 0) {                              // jeszcze nie ma danych
-                continue;
-            }
-            else if (readBytes == -1) { // kanał zamknięty po stronie serwera
-                // dalsze czytanie niemożlwe
-                // ...
-                KlientLogger.log("kanal zamknięty po stronie serwera");
-                break;
-            }
-            else {        // dane dostępne w buforze
-                //System.out.println("coś jest od serwera");
-
-                inBuf.flip();    // przestawienie bufora
-
-                // pobranie danych z bufora
-                // ew. decyzje o tym czy mamy komplet danych - wtedy break
-                // czy też mamy jeszcze coś do odebrania z serwera - kontynuacja
-                cbuf = charset.decode(inBuf);
-
-                String odSerwera = cbuf.toString();
-                KlientLogger.log("Od serwera: " + odSerwera);
-                String[] wiadomosciSerwera = odSerwera.split("\n");
-
-                for (String wiadomosc: wiadomosciSerwera) {
-                    handleSerwerMessage(dataState, wiadomosc);
+            readLoop:                    // Czytanie jest nieblokujące
+            while (true) {               // kontynujemy je dopóki
+                int n = channel.read(inBuf);   // nie natrafimy na koniec wiersza
+                if (n == -1) {
+                    KlientLogger.log("kanal zamknięty po stronie serwera");
+                    return;
                 }
-
-                Gui.updateDataState();
-                cbuf.clear();
-
+                if (n == 0 && reqString.length() == 0) {
+                    break readLoop;
+                }
+                if (n > 0) {
+                    inBuf.flip();
+                    CharBuffer cbuf = charset.decode(inBuf);
+                    while(cbuf.hasRemaining()) {
+                        char c = cbuf.get();
+                        //System.out.println(c);
+                        if (c == '\r' || c == '\n') break readLoop;
+                        else {
+                            //System.out.println(c);
+                            reqString.append(c);
+                        }
+                    }
+                }
             }
-
+            if (reqString.length() != 0) {
+                String odSerwera = reqString.toString();
+                reqString.setLength(0);
+                inBuf.clear();    // opróżnienie bufora wejściowego
+                KlientLogger.log("Od serwera: " + odSerwera);
+                handleSerwerMessage(dataState, odSerwera);
+                Gui.updateDataState();
+            }
         }
 
 
