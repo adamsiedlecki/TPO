@@ -2,13 +2,12 @@ package zad1.admin;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 public class AdminDataState {
 
-    public  Set<String> allTopics = new ConcurrentSkipListSet<>();
+    public  List<String> allTopics = new ArrayList<>();
     public Map<String, List<String>> newsOnTopics = new ConcurrentHashMap<>();
 
     public boolean adminWantsToUpdateTopics = false;
-    public  Set<String> newsChanged = new ConcurrentSkipListSet<>();
+    public  Set<String> newsChanged = new HashSet<>();
 }
