@@ -1,2 +1,5 @@
-tematy nie usuwają się za pierwszym kliknięciem
-newsy nie usuwają się od razu gdy jest ich wiele
+server wysyła do klientów newsy za każdym razem jak wskoczy mu coś nowego, przez co gdy przychodzi mu wiele
+newsów z wielu tematów na raz to wysyła dla innych najpierw 'brak'.
+
+Rozwiązanie:
+- opóżnienie w wysłaniu tematów 0,5s - nie od razu
