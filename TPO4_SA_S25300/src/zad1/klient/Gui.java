@@ -30,9 +30,11 @@ public class Gui extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Klient na TPO 4");
-        primaryStage.setHeight(700);
+        primaryStage.setHeight(300);
         primaryStage.setWidth(800);
         wynikLabel = new TextArea();
+        wynikLabel.setEditable(false);
+        wynikLabel.setMaxHeight(300);
 
         VBox root = new VBox();
 
