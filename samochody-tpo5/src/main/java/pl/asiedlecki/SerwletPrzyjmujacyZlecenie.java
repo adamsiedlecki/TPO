@@ -12,4 +12,9 @@ public class SerwletPrzyjmujacyZlecenie extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("/przyjmowanie.jsp").forward(request, response);
     }
+
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("/wyszukaj").forward(request, response);
+    }
 }

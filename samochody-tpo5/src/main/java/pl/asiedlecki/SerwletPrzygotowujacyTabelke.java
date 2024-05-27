@@ -12,7 +12,7 @@ import java.util.List;
 public class SerwletPrzygotowujacyTabelke extends HttpServlet {
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         List<Samochod> results = (List<Samochod>) request.getAttribute("samochody");
 

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class SerwletWyszukujacyDane extends HttpServlet {
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String json = String.join("", Files.readAllLines(Paths.get(getServletContext().getRealPath("samochody.json"))));
         JSONArray array = new JSONArray(json);
         List<Samochod> samochody = new ArrayList<>();
