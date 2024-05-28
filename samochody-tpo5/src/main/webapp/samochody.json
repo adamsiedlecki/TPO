@@ -1,7 +1,0 @@
-[
-  {"rodzaj":  "osobowy",   "marka":  "ford", "model":  "mustang", "rok_produkcji":  2015},
-  {"rodzaj":  "osobowy",   "marka":  "ford", "model":  "focus", "rok_produkcji":  2016},
-  {"rodzaj":  "osobowy",   "marka":  "volvo", "model":  "xc60", "rok_produkcji":  2010},
-  {"rodzaj":  "dostawczy", "marka":  "renault", "model":  "master", "rok_produkcji":  2020},
-  {"rodzaj":  "dostawczy", "marka":  "renault", "model":  "master", "rok_produkcji":  2024}
-]
