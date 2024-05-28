@@ -1,0 +1,45 @@
+1. Zadanie:
+
+a. Konieczność separacji logiki działania, prezentacji
+
+b. Serwlety:
+
+Serwlet przyjmujący zlecenie
+serwlet wyszukujący dane
+Serwlet przygotowujący gotową stronę HTML
+
+c. Dane w bazie danych: +5 pkt
+
+2. Środowiska: IntelliJ, Eclipse IDE for JEE Developers, ...
+
+3. Serwer aplikacji: Apache Tomcat
+
+MS-Teams Files/Pliki: apache-tomcat-9.0.89.zip
+lub
+https://tomcat.apache.org/
+
+4. Przykładowe programy (serwlety) z wykładu:
+
+W katalogu apache-tomcat-9.0.89
+
+a. Start/Stop serwera: start.bat/stop.bat
+
+set CATALINA_HOME=Z:\apache-tomcat-9.0.89
+gdzie CATALINA_HOME to katalog instalacyjny Tomcata (po rozpakowaniu z pliku zip).
+
+set CATALINA_BASE=Z:\apache-tomcat-9.0.89
+gdzie CATALINA_BASE to katalog w którym znajdują się min. katalog webapps i własne serwlety.
+
+b. testoweSerwlety.txt
+
+5. Możliwa konieczność zmiana portu w przypadku niepowodzenia startu serwera:
+
+Modyfikacja pliku: apache-tomcat-9.0.89\conf\server.xml
+
+z
+
+<Server port="8005" shutdown="SHUTDOWN">
+
+na
+
+<Server port="8006" shutdown="SHUTDOWN">
