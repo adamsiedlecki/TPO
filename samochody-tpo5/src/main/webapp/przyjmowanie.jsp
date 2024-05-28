@@ -5,7 +5,7 @@
     <meta charset="utf-8">
 </head>
 <body>
-    <h1>Wyszukiwanie samochodów</h1>
+    <h1>Wyszukiwanie samochodow</h1>
     <form action="przyjmij" method="POST">
         <label for="type">Rodzaj samochodu:</label>
         <input type="text" id="rodzajSamochodu" name="rodzajSamochodu">

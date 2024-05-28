@@ -29,7 +29,9 @@ public class SerwletWyszukujacyDane extends HttpServlet {
         }
         String rodzaj = request.getParameter("rodzajSamochodu");
         System.out.println("Rodzaj samochodu: " + rodzaj);
-        samochody = samochody.stream().filter(s -> s.getRodzaj().equals(rodzaj)).collect(Collectors.toList());
+        if (!rodzaj.isEmpty()) {
+            samochody = samochody.stream().filter(s -> s.getRodzaj().equals(rodzaj)).collect(Collectors.toList());
+        }
 
         request.setAttribute("samochody", samochody);
         request.getRequestDispatcher("/tabelka").forward(request, response);
